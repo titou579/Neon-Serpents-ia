@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#05060f" />
+<meta name="description" content="Neon Serpents — arène multijoueur temps réel : grandis, encercle, survis." />
+<title>Neon Serpents — arène multijoueur</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2300e5ff'/%3E%3Ccircle cx='11' cy='13' r='3' fill='%2305060f'/%3E%3Ccircle cx='21' cy='13' r='3' fill='%2305060f'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<canvas id="scene" aria-label="Arène de jeu"></canvas>
+
+<div id="hud" class="hud hidden" aria-hidden="true">
+  <div class="hud-left">
+    <div class="stat"><span class="stat-label">Score</span><span id="stat-score" class="stat-value">0</span></div>
+    <div class="stat"><span class="stat-label">Masse</span><span id="stat-mass" class="stat-value">0</span></div>
+    <div class="stat"><span class="stat-label">Éliminations</span><span id="stat-kills" class="stat-value">0</span></div>
+    <div class="stat small"><span class="stat-label">Rang</span><span id="stat-rank" class="stat-value">—</span></div>
+  </div>
+
+  <div class="hud-right">
+    <div class="panel board">
+      <h2>Classement live</h2>
+      <ol id="board-list"></ol>
+    </div>
+    <div class="panel net">
+      <span id="stat-players">0 joueur</span>
+      <span id="stat-ping">— ms</span>
+      <span id="stat-fps">— fps</span>
+      <button id="sound-toggle" type="button" class="ghost" aria-pressed="true" title="Activer / couper le son">Son : on</button>
+    </div>
+  </div>
+
+  <div class="boost-wrap">
+    <div class="boost-bar"><div id="boost-fill"></div></div>
+    <span class="boost-hint">Maintiens <kbd>clic</kbd> ou <kbd>espace</kbd> pour accélérer</span>
+  </div>
+
+  <canvas id="minimap" width="180" height="180" class="minimap" aria-label="Mini-carte"></canvas>
+  <div id="touch-hint" class="touch-hint hidden">Glisse pour diriger · double appui pour accélérer</div>
+</div>
+
+<div id="menu" class="overlay">
+  <div class="card">
+    <h1 class="logo">NEON<span>SERPENTS</span></h1>
+    <p class="tagline">Arène multijoueur temps réel. Grandis, encercle, survis.</p>
+
+    <form id="join-form" autocomplete="off">
+      <label for="name-input" class="sr-only">Pseudo</label>
+      <input id="name-input" name="name" type="text" maxlength="16" placeholder="Ton pseudo" spellcheck="false" />
+      <button id="play-button" type="submit" class="primary">Jouer</button>
+    </form>
+    <p id="menu-error" class="error" role="alert"></p>
+
+    <div class="columns">
+      <div>
+        <h2>Commandes</h2>
+        <ul class="rules">
+          <li><b>Souris / doigt</b> — diriger</li>
+          <li><b>Clic maintenu / espace</b> — accélérer (coûte de la masse)</li>
+          <li><b>Entrée</b> — rejouer après une mort</li>
+        </ul>
+        <h2>Règles</h2>
+        <ul class="rules">
+          <li>Avale les orbes pour grandir.</li>
+          <li>Si ta tête touche un autre serpent ou le mur, tu exploses.</li>
+          <li>Fais mourir les autres et récupère leur masse : +25 points par élimination.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Hall of fame</h2>
+        <ol id="alltime-list" class="alltime"><li class="muted">chargement…</li></ol>
+      </div>
+    </div>
+
+    <p class="footer">Serveur autoritatif · 20 ticks/s · <span id="conn-state">connexion…</span></p>
+  </div>
+</div>
+
+<div id="death" class="overlay hidden">
+  <div class="card small-card">
+    <h1 class="dead-title">Éliminé</h1>
+    <p id="death-cause" class="tagline"></p>
+    <div class="death-stats">
+      <div><span id="death-score">0</span><small>score</small></div>
+      <div><span id="death-kills">0</span><small>éliminations</small></div>
+      <div><span id="death-rank">—</span><small>meilleur</small></div>
+    </div>
+    <button id="replay-button" type="button" class="primary">Rejouer</button>
+    <button id="menu-button" type="button" class="ghost wide">Retour au menu</button>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/main.js"></script>
+</body>
+</html>
